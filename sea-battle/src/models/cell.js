@@ -1,20 +1,9 @@
-import React from 'react';
-
-interface CellProps {
-    x: number;
-    y: number;
-    mark: string | null;
-}
-
-class Cell extends React.Component<CellProps> {
-    render() {
-        const { x, y, mark } = this.props;
-        return (
-            <div className="cell">
-                {mark}
-            </div>
-        );
+export class Cell {
+    constructor(board, x, y, mark) {
+        this.x = x
+        this.y = y
+        this.board = board
+        this.mark = mark
+        this.id = Math.random
     }
 }
-
-export default Cell;

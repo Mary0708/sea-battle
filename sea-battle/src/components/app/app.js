@@ -1,27 +1,21 @@
 import React from "react";
-import { HelmetProvider } from "react-helmet-async";
-import { Routes, Route } from "react-router-dom";
-import AuthScreen from "../../pages/auth-screen/auth-screen";
-import NotFoundScreen from "../../pages/not-found-screen/not-found-screen";
-import GameScreen from "../../pages/game-screen/game-screen";
+import { Routes, Route, BrowserRouter } from "react-router-dom";
+import Login from "../../pages/login";
+import GameScreen from "../../pages/game";
+import './app.css'
 
 export default function App() {
   return (
-    <HelmetProvider>
+    <BrowserRouter>
       <Routes>
         <Route
           path='/'
-          element={<AuthScreen />}
+          element={<Login />}
         />
-         {/* <Route
-          path={AppRoute.Game}
-          element={< GameScreen/>}
-        /> */}
-        <Route
-          path="*"
-          element={<NotFoundScreen />}
-        />
+        <Route path="/game">
+          <Route path=':gameId' element={< GameScreen />} />
+        </Route>
       </Routes>
-    </HelmetProvider>
+    </BrowserRouter>
   );
 }

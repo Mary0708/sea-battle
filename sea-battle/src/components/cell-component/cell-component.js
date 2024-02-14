@@ -1,4 +1,4 @@
-export default function CellComponent({cell, addMark }):  {
+export default function CellComponent({cell, addMark })  {
     const cellClasses = ['cell']
 
     cellClasses.push(cell?.mark?.color)
