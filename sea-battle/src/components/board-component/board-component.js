@@ -5,21 +5,37 @@ export default function BoardComponent({ board, setBoard, shipsReady, isMyBoard,
 
     const boardClasses = ['board']
 
+    console.log(board)
+
     if (canShoot) {
         boardClasses.push('active-shoot')
     }
-    function addMark(x, y) {
 
+    function addMark(x, y) {
+        if (!shipsReady && isMyBoard) {
+            board.addShip(x, y)
+        } else if (canShoot && !isMyBoard) {
+            shoot(x, y)
+        }
+
+        updateBoard()
     }
+
+function updateBoard() {
+    const newBoard = board.getCopyBoard()
+
+    setBoard(newBoard)
+}
 
     return (
         <div className={boardClasses.join(' ')}>
-            {board.cells.map((row, index) => {
+            {board.cells.map((row, index) => (
                 <React.Fragment key={index}>
-                    {row.map((cell) =>
-                        <CellComponent key={cell.id} cell={cell} addMark={addMark} />)}
-                </React.Fragment>;
-            })}
+                    {row.map((cell) => (
+                        <CellComponent key={cell.id} cell={cell} addMark={addMark} />
+                    ))}
+                </React.Fragment>
+            ))}
         </div>
     );
 }

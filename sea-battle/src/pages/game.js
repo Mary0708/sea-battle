@@ -1,50 +1,122 @@
-import { useParams } from 'react-router-dom';
+import { Navigate, useNavigate, useParams } from 'react-router-dom';
 import { Board } from '../models/board';
 import { useEffect, useState } from 'react';
 import BoardComponent from '../components/board-component/board-component';
+import ActionInfo from '../components/action-info/action-info';
+
+const wss = new WebSocket('ws://localhost:4000')
 
 export default function GameScreen() {
-  const params = useParams();
-  const [friendName, setFriendName] = useState('');
-  const [shipsReady, setChipsReady] = useState(false);
-  const [canShoot, setCanShoot] = useState(false);
+    const navigate = useNavigate();
 
-  const gameId = Number(params.id);
+    const params = useParams();
+    const [friendName, setFriendName] = useState('');
+    const [shipsReady, setChipsReady] = useState(false);
+    const [canShoot, setCanShoot] = useState(false);
 
-  const [myBoard, setMyBoard] = useState(new Board());
-  const [friendBoard, setFriendBoard] = useState(new Board());
+    const gameId = Number(params.id);
 
-  function restart() {
-    const newMyBoard = new Board();
-    const newFriendBoard = new Board();
-    newMyBoard.initCells();
-    newFriendBoard.initCells();
-    setMyBoard(newMyBoard);
-    setFriendBoard(newFriendBoard);
-  }
+    const [myBoard, setMyBoard] = useState(new Board());
+    const [friendBoard, setFriendBoard] = useState(new Board());
 
-  function shoot(x, y) {
+    function restart() {
+        const newMyBoard = new Board();
+        const newFriendBoard = new Board();
+        newMyBoard.initCells();
+        newFriendBoard.initCells();
+        setMyBoard(newMyBoard);
+        setFriendBoard(newFriendBoard);
+    }
 
-  }
+    function shoot(x, y) {
+        wss.send(JSON.stringify({ event: 'shoot', payload: { username: localStorage.name, x, y, gameId } }))
+    }
 
-  useEffect(() => {
-    restart();
-  }, []);
+    wss.onmessage = function (response) {
+        const { type, payload } = JSON.parse(response.data)
+        const { username, x, y, canStart, friendName, success } = payload;
 
-  return (
-    <div>
-      <p>ДОБРО ПОЖАЛОВАТЬ В ИГРУ </p>
-      <div className="boards-container">
-      </div>
+        switch (type) {
+            case 'connectToPlay':
 
-      <div>
-        <p className="name">{localStorage.name}</p>
-        <BoardComponent board={myBoard} setBoard={setMyBoard} shipsReady={shipsReady} isMyBoard canShoot={false} shoot={shoot} />
-      </div>
-      <div>
-        <p className="name">{friendName || 'Неизвестный'}</p>
-        <BoardComponent board={friendBoard} setBoard={setFriendBoard} shipsReady={shipsReady} isMyBoard={undefined} canShoot={canShoot} shoot={shoot} />
-      </div>
-    </div>
-  );
+                if (!success) {
+                    return navigate('/')
+                }
+                setFriendName(friendName)
+                break;
+
+            case 'readyToPlay':
+                if (payload.username === localStorage.name && canStart) {
+                    setCanShoot(true);
+                }
+                break;
+
+            case 'afterShootByMe':
+                if (username !== localStorage.name) {
+                    const isPerfectHit = myBoard.cells[y][x].mark?.name === 'ship'
+                    changeBoardAfterShoot(myBoard, setMyBoard, x, y, isPerfectHit)
+                    wss.send(JSON.stringify({ event: 'checkShoot', payload: { ...payload, isPerfectHit } }))
+
+                    if (!isPerfectHit) {
+                        setCanShoot(true)
+                    }
+                }
+                break;
+            case 'isPerfectHit':
+                if (username === localStorage.name) {
+                    changeBoardAfterShoot(friendBoard, setFriendBoard, x, y, payload.isPerfectHit)
+                    payload.isPerfectHit ? setCanShoot(true) : setCanShoot(false)
+                }
+                break;
+
+            default:
+                break;
+        }
+    }
+
+    function changeBoardAfterShoot(board, setBoard, x, y, isPerfectHit) {
+        isPerfectHit ? board.addDamage(x, y) : board.addMiss(x, y)
+        const newBoard = board.getCopyBoard()
+        setBoard(newBoard)
+    }
+
+    useEffect(() => {
+        wss.send(JSON.stringify({ event: 'connect', payload: { username: localStorage.name, gameId } }))
+        restart();
+    }, []);
+
+    function ready() {
+        wss.send(JSON.stringify({ event: 'ready', payload: { username: localStorage.name, gameId } }))
+        setChipsReady(true)
+    }
+
+    return (
+        <div>
+            <p>ДОБРО ПОЖАЛОВАТЬ В ИГРУ </p>
+            <div className="boards-container">
+            </div>
+
+            <div>
+                <p className="name">{localStorage.name}</p>
+                <BoardComponent
+                    board={myBoard}
+                    setBoard={setMyBoard}
+                    shipsReady={shipsReady}
+                    isMyBoard
+                    canShoot={false}
+                    shoot={shoot} />
+            </div>
+            <div>
+                <p className="name">{friendName || 'Неизвестный'}</p>
+                <BoardComponent
+                    board={friendBoard}
+                    setBoard={setFriendBoard}
+                    shipsReady={shipsReady}
+                    canShoot={canShoot}
+                    shoot={shoot}
+                />
+            </div>
+            <ActionInfo ready={ready} canShoot={canShoot} shipsReady={shipsReady} />
+        </div>
+    );
 }

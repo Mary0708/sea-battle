@@ -1,7 +1,7 @@
 export default function ActionInfo( {shipsReady, canShoot, ready}) {
     
         if (!shipsReady) {
-            return <button className="btn-ready" onClick={ready}></button>
+            return <button className="btn-ready" onClick={ready}>Корабли готовы</button>
         }
         
         return (

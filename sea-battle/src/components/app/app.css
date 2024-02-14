@@ -1,3 +1,7 @@
+.App {
+    text-align: center;
+}
+
 .board-container {
     display: flex;
     justify-content: space-around;

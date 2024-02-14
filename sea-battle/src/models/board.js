@@ -1,4 +1,7 @@
 import { Cell } from "./cell";
+import { Damage } from "./marks/damage";
+import { Miss } from "./marks/miss";
+import { Ship } from "./marks/ship";
 
 export class Board {
     cells = [];
@@ -12,5 +15,27 @@ export class Board {
 
             this.cells.push(row)
         }
+    }
+
+    getCopyBoard() {
+        const newBoard = new Board();
+        newBoard.cells = this.cells;
+        return newBoard
+    };
+
+    getCells(x, y) {
+        return this.cells[y][x]
+    }
+
+    addShip(x, y) {
+        new Ship(this.getCells(x, y))
+    }
+
+    addMiss(x, y) {
+        new Miss(this.getCells(x, y))
+    }
+
+    addDamage(x, y) {
+        new Damage(this.getCells(x, y))
     }
 }
