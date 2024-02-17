@@ -1,4 +1,4 @@
-import { Navigate, useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { Board } from '../models/board';
 import { useEffect, useState } from 'react';
 import BoardComponent from '../components/board-component/board-component';
@@ -13,9 +13,9 @@ export default function GameScreen() {
     const [friendName, setFriendName] = useState('');
     const [shipsReady, setChipsReady] = useState(false);
     const [canShoot, setCanShoot] = useState(false);
-
     const gameId = Number(params.id);
 
+    const [shipDirection, setShipDirection] = useState('horizontal');
     const [myBoard, setMyBoard] = useState(new Board());
     const [friendBoard, setFriendBoard] = useState(new Board());
 
@@ -29,8 +29,22 @@ export default function GameScreen() {
     }
 
     function shoot(x, y) {
-        wss.send(JSON.stringify({ event: 'shoot', payload: { username: localStorage.name, x, y, gameId } }))
+        if (wss.readyState === WebSocket.OPEN) {
+            wss.send(JSON.stringify({ event: 'shoot', payload: { username: localStorage.name, x, y, gameId } }));
+        } else {
+            console.error('WebSocket connection is not open.');
+        }
     }
+
+    useEffect(() => {
+        wss.send(JSON.stringify({ event: 'connect', payload: { username: localStorage.name, gameId } }));
+        restart();
+
+        return () => {
+            wss.close();
+        };
+    }, []);
+
 
     wss.onmessage = function (response) {
         const { type, payload } = JSON.parse(response.data)
@@ -81,9 +95,14 @@ export default function GameScreen() {
     }
 
     useEffect(() => {
-        wss.send(JSON.stringify({ event: 'connect', payload: { username: localStorage.name, gameId } }))
-        restart();
+        if (wss.readyState === WebSocket.OPEN) {
+            wss.send(JSON.stringify({ event: 'connect', payload: { username: localStorage.name, gameId } }));
+            restart();
+        } else {
+            console.error('WebSocket connection is not open.');
+        }
     }, []);
+
 
     function ready() {
         wss.send(JSON.stringify({ event: 'ready', payload: { username: localStorage.name, gameId } }))
@@ -94,29 +113,57 @@ export default function GameScreen() {
         <div>
             <p>ДОБРО ПОЖАЛОВАТЬ В ИГРУ </p>
             <div className="boards-container">
+                <div className="message">Расставьте свои корабли</div>
+                <div className="direction">
+                <p className="horiz_p">
+                    <input
+                        type="radio"
+                        className="horiz"
+                        name="direction"
+                        value="Горизонтально"
+                        defaultChecked
+                        onChange={() => setShipDirection('horizontal')}
+                    />
+                    <img className='image' src="/img/1_h.png" alt="Горизонтально" />
+                </p>
+                <p className="vertic_p">
+                    <input
+                        type="radio"
+                        className="vertic"
+                        name="direction"
+                        value="Вертикально"
+                        onChange={() => setShipDirection('vertical')}
+                    />
+                    <img className='image' src="/img/1_v.png" alt="Вертикально" />
+                </p>
             </div>
 
-            <div>
-                <p className="name">{localStorage.name}</p>
-                <BoardComponent
-                    board={myBoard}
-                    setBoard={setMyBoard}
-                    shipsReady={shipsReady}
-                    isMyBoard
-                    canShoot={false}
-                    shoot={shoot} />
-            </div>
-            <div>
-                <p className="name">{friendName || 'Неизвестный'}</p>
-                <BoardComponent
-                    board={friendBoard}
-                    setBoard={setFriendBoard}
-                    shipsReady={shipsReady}
+                <div>
+                    <p className="name">{localStorage.name}</p>
+                    <BoardComponent
+                        board={myBoard}
+                        setBoard={setMyBoard}
+                        shipsReady={shipsReady}
+                        isMyBoard
+                        canShoot={false}
+                        shoot={shoot} />
+                </div>
+                <div>
+                    <p className="name">{friendName || 'Неизвестный'}</p>
+                    <BoardComponent
+                        board={friendBoard}
+                        setBoard={setFriendBoard}
+                        shipsReady={shipsReady}
+                        canShoot={canShoot}
+                        shoot={shoot}
+                    />
+                </div>
+                <ActionInfo
+                    ready={ready}
                     canShoot={canShoot}
-                    shoot={shoot}
+                    shipsReady={shipsReady}
                 />
             </div>
-            <ActionInfo ready={ready} canShoot={canShoot} shipsReady={shipsReady} />
         </div>
     );
 }

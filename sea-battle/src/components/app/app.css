@@ -3,18 +3,18 @@
 }
 
 .board-container {
-    display: flex;
-    justify-content: space-around;
-  }
-  
-  .board {
-    width: 300px;
-    height: 300px;
-    display: flex;
-    flex-wrap: wrap;
-    align-content: start;
-  }
-  
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.board {
+  width: 300px;
+  height: 300px;
+  display: flex;
+  flex-wrap: wrap;
+  align-content: start;
+}
   .active-shoot {
     outline: 3px solid greenyellow;
   }
@@ -25,20 +25,20 @@
     align-items: center;
     width: 30px;
     height: 30px;
-    border: 1px solid blue;
+    border: 1px solid grey;
     box-sizing: border-box;
     line-height: 100%;
   }
   
   .btn-ready,
   .btn-gen {
-    background-color: blueviolet;
-    color: aliceblue;
+    background-color: rgb(110, 180, 236);
+    color: rgb(0, 2, 3);
     outline: none;
     border: none;
     height: 30px;
-    margin-top: 30px;
-    border-radius: 4px;
+    margin-top: 40px;
+    border-radius: 10px;
   }
   
   .btn-gen {
@@ -72,3 +72,29 @@
   .field-group {
     padding: 10px;
   }
+
+  .message {
+    font-size: 18px;
+    font-weight: bold;
+    color: #100;
+    text-align: center;
+    height: 30px;
+  }
+
+  .direction {
+    margin: 0 auto; 
+    width: 200px;
+}
+
+.image {
+  vertical-align: -15px;
+
+}
+
+.vertic {
+  vertical-align: 0px;
+}
+
+.horiz {
+  vertical-align: 0px;
+}
