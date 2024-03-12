@@ -12,7 +12,9 @@ export default function GameScreen() {
     const [friendName, setFriendName] = useState('');
     const [shipsReady, setShipsReady] = useState(false);
     const [canShoot, setCanShoot] = useState(false);
-    const [gameResult, setGameResult] = useState(null);
+
+    const [opponentsReady, setOpponentsReady] = useState(false);
+
     const gameId = useParams();
     const [shipDirection, setShipDirection] = useState('horizontal');
 
@@ -29,12 +31,16 @@ export default function GameScreen() {
     }
 
     function shoot(x, y) {
-        wss.send(
-            JSON.stringify({
-                event: "shoot",
-                payload: { username: localStorage.name, x, y, gameId },
-            })
-        );
+        if (opponentsReady) {
+            wss.send(
+                JSON.stringify({
+                    event: "shoot",
+                    payload: { username: localStorage.name, x, y, gameId },
+                })
+            );
+        } else {
+            console.log("Нельзя стрелять, противник не готов");
+        }
     }
 
     useEffect(() => {
@@ -60,7 +66,9 @@ export default function GameScreen() {
                 break;
 
             case 'readyToPlay':
-                if (payload.username === localStorage.name && canStart) {
+                if (payload.username !== localStorage.name) {
+                    setOpponentsReady(canStart);
+                } else if (canStart) {
                     setCanShoot(true);
                 }
                 break;
@@ -172,8 +180,9 @@ export default function GameScreen() {
                 </div>
                 <ActionInfo
                     ready={ready}
-                    canShoot={canShoot}
+                    canShoot={canShoot && opponentsReady}
                     shipsReady={shipsReady}
+                    opponentsReady={opponentsReady}
                 />
             </div>
         </div>
