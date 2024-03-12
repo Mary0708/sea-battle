@@ -2,10 +2,13 @@
     text-align: center;
 }
 
-.board-container {
+.boards-wrapper {
   display: flex;
   justify-content: center;
-  align-items: center;
+}
+
+.board-container {
+  margin-right: 100px;
 }
 
 .board {
@@ -97,4 +100,10 @@
 
 .horiz {
   vertical-align: 0px;
+}
+
+.large-board {
+  width: 400px; /* Измените значение на желаемую ширину */
+  height: 400px; /* Измените значение на желаемую высоту */
+  margin-right: 20px; /* или другое значение отступа между досками */
 }

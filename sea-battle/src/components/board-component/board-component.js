@@ -12,8 +12,8 @@ export default function BoardComponent({ board, setBoard, shipsReady, isMyBoard,
     }
 
     function addMark(x, y) {
+        console.log('shipDirection:', shipDirection);
         if (!shipsReady && isMyBoard) {
-            // Используйте выбранное направление для расстановки кораблей
             if (shipDirection === 'horizontal') {
                 board.addShip(x, y);
                 board.addShip(x + 1, y);
@@ -28,15 +28,15 @@ export default function BoardComponent({ board, setBoard, shipsReady, isMyBoard,
         } else if (canShoot && !isMyBoard) {
             shoot(x, y);
         }
-
+    
         updateBoard();
     }
 
-function updateBoard() {
-    const newBoard = board.getCopyBoard()
+    function updateBoard() {
+        const newBoard = board.getCopyBoard()
 
-    setBoard(newBoard)
-}
+        setBoard(newBoard)
+    }
 
     return (
         <div className={boardClasses.join(' ')}>
