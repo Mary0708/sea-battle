@@ -17,7 +17,7 @@ export default function Login() {
     }
 
     return (
-        <div>
+        <div className="login-container">
             <h2>Авторизация</h2>
             <form onSubmit={startPlay}>
                 <div className="field-group">

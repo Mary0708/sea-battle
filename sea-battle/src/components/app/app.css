@@ -1,5 +1,9 @@
 .App {
     text-align: center;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
 }
 
 .boards-wrapper {
@@ -28,15 +32,15 @@
     align-items: center;
     width: 30px;
     height: 30px;
-    border: 1px solid grey;
+    border: 1.5px solid rgb(0, 0, 0);
     box-sizing: border-box;
     line-height: 100%;
   }
   
   .btn-ready,
   .btn-gen {
-    background-color: rgb(110, 180, 236);
-    color: rgb(0, 2, 3);
+    background-color: rgb(29, 65, 143);
+    color: rgb(217, 245, 245);
     outline: none;
     border: none;
     height: 30px;
@@ -45,7 +49,8 @@
   }
   
   .btn-gen {
-    background-color: limegreen;
+    background-color: rgb(33, 24, 116);
+    margin-top: 20px;
   }
   
   .red {
@@ -54,7 +59,7 @@
   }
   
   .blue {
-    color: blue;
+    color: rgb(11, 1, 158);
     font-size: 30px;
     vertical-align: middle;
     font-weight: bolder;
@@ -68,8 +73,9 @@
     width: 300px;
     height: 39px;
     border-radius: 4px;
-    border: 2px solid lightblue;
+    border: 2px solid rgb(194, 211, 209);
     outline: none;
+    margin: 10px auto;
   }
   
   .field-group {
@@ -79,7 +85,7 @@
   .message {
     font-size: 18px;
     font-weight: bold;
-    color: #100;
+    color: rgb(0, 0, 0);
     text-align: center;
     height: 30px;
   }
@@ -107,3 +113,28 @@
   height: 400px; 
   margin-right: 20px;
 }
+
+.login-container {
+  background-image: url('../../../public/img/fon.png');
+  background-size: cover;
+  background-repeat: no-repeat; 
+  background-repeat: no-repeat;
+  height: 100%; 
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+ }
+
+ .fon {
+  background-image: url(../../../public/img/bck.png);
+  background-size: cover;
+  background-repeat: no-repeat; 
+  background-repeat: no-repeat;
+  height: 100%; 
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  color: rgb(0, 0, 0);
+ }

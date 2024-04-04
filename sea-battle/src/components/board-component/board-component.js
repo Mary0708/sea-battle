@@ -6,12 +6,25 @@ export default function BoardComponent({ board, setBoard, shipsReady, isMyBoard,
 
     const [occupiedCells, setOccupiedCells] = useState([]);
     const [shipDirection, setShipDirection] = useState('horizontal');
-    
+    const [soundEnabled, setSoundEnabled] = useState(true);
+
+    function toggleSound() {
+        setSoundEnabled(!soundEnabled);
+    }
+
+    function playExplosionSound() {
+        if (soundEnabled) {
+            const audio = new Audio();
+            audio.src = '../../public/sounds/animeWowSound.mp3'
+            audio.play();
+        }
+    }
+
     const [remainingShips, setRemainingShips] = useState({
-        '4': 1, // 1 ship with 4 cells
-        '3': 2, // 2 ships with 3 cells
-        '2': 3, // 3 ships with 2 cells
-        '1': 4  // 4 ships with 1 cell
+        '4': 1, 
+        '3': 2,
+        '2': 3, 
+        '1': 4  
     });
 
     if (canShoot) {
@@ -32,6 +45,7 @@ export default function BoardComponent({ board, setBoard, shipsReady, isMyBoard,
             }
         } else if (canShoot && !isMyBoard) {
             shoot(x, y);
+            playExplosionSound()
         }
 
         updateBoard();
@@ -52,7 +66,7 @@ export default function BoardComponent({ board, setBoard, shipsReady, isMyBoard,
             ) {
                 // Есть перекрывающийся корабль или выход за границы доски
                 console.log('Невозможно разместить корабль. Перекрывающаяся позиция или выход за границы.');
-                
+
                 // Вывести предупреждение пользователю и выйти из функции
                 alert('Невозможно разместить корабль в этой позиции.');
                 return;
