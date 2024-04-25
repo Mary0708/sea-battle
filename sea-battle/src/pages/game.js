@@ -5,7 +5,7 @@ import { useEffect } from "react";
 import BoardComponent from "../components/board-component/board-component";
 import ActionInfo from "../components/action-info/action-info";
 
-const wss = new WebSocket('ws://localhost:4000');
+const wss = new WebSocket('ws://192.168.0.110:4000');
 
 export default function GameScreen() {
     const navigate = useNavigate();
